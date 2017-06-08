@@ -13,6 +13,8 @@
 		0E4AB7541EE8F5A500BD2724 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E4AB7521EE8F5A500BD2724 /* Main.storyboard */; };
 		0E4AB7561EE8F5A500BD2724 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E4AB7551EE8F5A500BD2724 /* Assets.xcassets */; };
 		0E4AB7591EE8F5A500BD2724 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E4AB7571EE8F5A500BD2724 /* LaunchScreen.storyboard */; };
+		0E4AB7631EE8F65500BD2724 /* JGZAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E4AB7621EE8F65500BD2724 /* JGZAlertView.m */; };
+		0E4AB7661EE8FAC800BD2724 /* ViewControllerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E4AB7651EE8FAC800BD2724 /* ViewControllerCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,10 @@
 		0E4AB7551EE8F5A500BD2724 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0E4AB7581EE8F5A500BD2724 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0E4AB75A1EE8F5A500BD2724 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0E4AB7611EE8F65500BD2724 /* JGZAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JGZAlertView.h; sourceTree = "<group>"; };
+		0E4AB7621EE8F65500BD2724 /* JGZAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JGZAlertView.m; sourceTree = "<group>"; };
+		0E4AB7641EE8FAC800BD2724 /* ViewControllerCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerCell.h; sourceTree = "<group>"; };
+		0E4AB7651EE8FAC800BD2724 /* ViewControllerCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,10 +64,13 @@
 		0E4AB7481EE8F5A500BD2724 /* JGZAlertViewDemo */ = {
 			isa = PBXGroup;
 			children = (
+				0E4AB7601EE8F63400BD2724 /* JGZAlertView */,
 				0E4AB74C1EE8F5A500BD2724 /* AppDelegate.h */,
 				0E4AB74D1EE8F5A500BD2724 /* AppDelegate.m */,
 				0E4AB74F1EE8F5A500BD2724 /* ViewController.h */,
 				0E4AB7501EE8F5A500BD2724 /* ViewController.m */,
+				0E4AB7641EE8FAC800BD2724 /* ViewControllerCell.h */,
+				0E4AB7651EE8FAC800BD2724 /* ViewControllerCell.m */,
 				0E4AB7521EE8F5A500BD2724 /* Main.storyboard */,
 				0E4AB7551EE8F5A500BD2724 /* Assets.xcassets */,
 				0E4AB7571EE8F5A500BD2724 /* LaunchScreen.storyboard */,
@@ -77,6 +86,15 @@
 				0E4AB74A1EE8F5A500BD2724 /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0E4AB7601EE8F63400BD2724 /* JGZAlertView */ = {
+			isa = PBXGroup;
+			children = (
+				0E4AB7611EE8F65500BD2724 /* JGZAlertView.h */,
+				0E4AB7621EE8F65500BD2724 /* JGZAlertView.m */,
+			);
+			path = JGZAlertView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -110,7 +128,7 @@
 				TargetAttributes = {
 					0E4AB7451EE8F5A500BD2724 = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = FUWD834EPR;
+						DevelopmentTeam = E2ZX76738J;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -151,9 +169,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E4AB7661EE8FAC800BD2724 /* ViewControllerCell.m in Sources */,
 				0E4AB7511EE8F5A500BD2724 /* ViewController.m in Sources */,
 				0E4AB74E1EE8F5A500BD2724 /* AppDelegate.m in Sources */,
 				0E4AB74B1EE8F5A500BD2724 /* main.m in Sources */,
+				0E4AB7631EE8F65500BD2724 /* JGZAlertView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -275,7 +295,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = FUWD834EPR;
+				DEVELOPMENT_TEAM = E2ZX76738J;
 				INFOPLIST_FILE = JGZAlertViewDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jgzhu.JGZAlertViewDemo;
@@ -287,7 +307,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = FUWD834EPR;
+				DEVELOPMENT_TEAM = E2ZX76738J;
 				INFOPLIST_FILE = JGZAlertViewDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jgzhu.JGZAlertViewDemo;
