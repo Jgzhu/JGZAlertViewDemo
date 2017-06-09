@@ -12,6 +12,11 @@
 
 @property (nonatomic, copy) NSString *AlertTitle;
 @property (nonatomic, copy) NSString *AlertMessage;
+
+-(instancetype)init NS_UNAVAILABLE;
+-(instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
+-(instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initPrivate;
 +(instancetype)AlertViewWithTitle:(NSString *)Title Message:(NSString *)message;
 -(void)AddAction:(UIButton *)Button;
 -(void)show;
