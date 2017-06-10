@@ -6,23 +6,59 @@
 //  Copyright © 2017年 江贵铸. All rights reserved.
 //
 /*//////////////////本次完成//////////////////////////////////////
- *界面基本完成
+ *适配屏幕选装：把title和message控件设为全局控件，在layoutSubviews里面计算大小
+ *自定义按钮控件，写个继承UIButton的子类，工厂方法快速创建
  *//////////////////////////////////////////////////////////////
 
 /*//////////////////下次开始//////////////////////////////////////
- *适配屏幕选装：把title和message控件设为全局控件，在layoutSubviews里面计算大小
- *自定义按钮控件，写个继承UIButton的子类，工厂方法快速创建
+ *重构代码
  *//////////////////////////////////////////////////////////////
 #import "JGZAlertView.h"
 #define JGZ_SCREEN_WIDTH ([[UIScreen mainScreen] bounds].size.width)
 #define JGZ_SCREEN_HEIGHT ([[UIScreen mainScreen] bounds].size.height)
 #define JGZ_ThemeColor [UIColor colorWithRed:94/255.0 green:96/255.0 blue:102/255.0 alpha:1]
 
+#pragma mark==😂UIButton的子类😂==
+
+@interface JGZAlertAction()
+@property (nonatomic,copy)NSString *title;
+@property (nonatomic,copy) void(^ActionBlock)(JGZAlertAction *Action);
+@end
+@implementation JGZAlertAction
+
++(instancetype)ActionWithTitle:(NSString *)title ClickBlock:(void (^)(JGZAlertAction *))block{
+    JGZAlertAction *AlertAction=[JGZAlertAction buttonWithType:UIButtonTypeCustom];
+    AlertAction.title = title;
+    AlertAction.ActionBlock = block;
+    
+    [AlertAction setTitle:title forState:UIControlStateNormal];
+    [AlertAction setTitleColor:[UIColor colorWithRed:94/255.0 green:96/255.0 blue:102/255.0 alpha:1] forState:UIControlStateNormal];
+    [AlertAction setBackgroundImage:[JGZAlertAction imageWithColor:[UIColor colorWithWhite:0.97 alpha:1]] forState:UIControlStateHighlighted];
+    return AlertAction;
+}
+#pragma mark-根据颜色生成图片
+/**根据颜色生成图片*/
++(UIImage *)imageWithColor:(UIColor *)color {
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f); //宽高 1.0只要有值就够了
+    UIGraphicsBeginImageContext(rect.size); //在这个范围内开启一段上下文
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, [color CGColor]);//在这段上下文中获取到颜色UIColor
+    CGContextFillRect(context, rect);//用这个颜色填充这个上下文
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();//从这段上下文中获取Image属性,,,结束
+    UIGraphicsEndImageContext();
+    return image;
+}
+@end
+
+
+
 @interface JGZAlertView ()
 @property (nonatomic,strong) UIView *AlertContentView;
-@property (nonatomic,strong) NSMutableArray *ActionsArray;
+@property (nonatomic,strong) NSMutableArray<JGZAlertAction *> *ActionsArray;
 @property (nonatomic,assign) CGFloat MaxHeight;
 @property (nonatomic,strong) NSMutableArray *SeparatorLineArray;
+@property (nonatomic,strong) UILabel *TitleLabel;
+@property (nonatomic,strong) UILabel *MessageLabel;
 @end
 @implementation JGZAlertView
 
@@ -42,7 +78,7 @@
     self = [super init];
     if (self) {
          self.MaxHeight=100.0;
-        //[self noti];
+        [self RegisterRotateNotification];
     }
     return self;
 }
@@ -74,32 +110,21 @@
 }
 -(void)CreatSubViews{
     UILabel *TitleLabel = [UILabel new];
+    self.TitleLabel = TitleLabel;
     TitleLabel.text = self.AlertTitle;
     TitleLabel.textColor =JGZ_ThemeColor;
     TitleLabel.numberOfLines=0;
     TitleLabel.font = [UIFont systemFontOfSize:20];
-    TitleLabel.textAlignment = NSTextAlignmentCenter;
-    CGFloat TitleLabelX = 20;
-    CGFloat TitleLabelY = 20;
-    CGFloat TitleLabelW =self.AlertContentView.frame.size.width-TitleLabelX*2;
-    CGSize TitleLabelSize = [TitleLabel sizeThatFits:CGSizeMake(TitleLabelW, CGFLOAT_MAX)];
-    TitleLabel.frame =CGRectMake(TitleLabelX, TitleLabelY, TitleLabelW, TitleLabelSize.height);
     [self.AlertContentView addSubview:TitleLabel];
     
     UILabel *MessageLabel = [UILabel new];
+    self.MessageLabel = MessageLabel;
     MessageLabel.text = self.AlertMessage;
     MessageLabel.textColor =JGZ_ThemeColor;
     MessageLabel.numberOfLines=0;
     MessageLabel.font = [UIFont systemFontOfSize:15];
-    MessageLabel.textAlignment = NSTextAlignmentLeft;
-    CGFloat MessageLabelX = 20;
-    CGFloat MessageLabelY = CGRectGetMaxY(TitleLabel.frame)+10;
-    CGFloat MessageLabelW =self.AlertContentView.frame.size.width-MessageLabelX*2;
-    CGSize MessageLabelSize = [MessageLabel sizeThatFits:CGSizeMake(MessageLabelW, CGFLOAT_MAX)];
-    MessageLabel.frame =CGRectMake(MessageLabelX, MessageLabelY, MessageLabelW, MessageLabelSize.height);
     [self.AlertContentView addSubview:MessageLabel];
-    
-    self.MaxHeight = CGRectGetMaxY(MessageLabel.frame);
+
 }
 
 -(UIView *)CreatSeparatorLine{
@@ -107,9 +132,9 @@
     lineview.backgroundColor=[UIColor colorWithWhite:0.94 alpha:1];
     return lineview;
 }
--(void)AddAction:(UIButton *)Button{
-    [self.ActionsArray addObject:Button];
-    [self.AlertContentView addSubview:Button];
+-(void)AddAction:(JGZAlertAction *)Action{
+    [self.ActionsArray addObject:Action];
+    [self.AlertContentView addSubview:Action];
     
     UIView *lineview = [self CreatSeparatorLine];
     [self.AlertContentView addSubview:lineview];
@@ -117,7 +142,7 @@
 }
 -(void)layoutSubviews{
     [super layoutSubviews];
-    [self UpdateAllButtonFrame];
+    [self UpdateAllSubviewsFrame];
 }
 
 -(void)show{
@@ -133,6 +158,7 @@
     [[UIApplication sharedApplication].keyWindow addSubview:self];
 }
 -(void)dismissAnimation{
+    [self RemoveRotateNotification];
     [UIView animateWithDuration:0.35 animations:^{
        self.transform = CGAffineTransformMakeScale(1.1, 1.1);
         self.AlertContentView.alpha = 0;
@@ -140,7 +166,10 @@
       [self removeFromSuperview];
     }];
 }
-
+-(void)UpdateAllSubviewsFrame{
+    [self UpdateAllLabelFrame];
+    [self UpdateAllButtonFrame];
+}
 -(void)UpdateAllButtonFrame{
     if (self.ActionsArray.count==2) {
         [self UpdateTwoButtonFrame];
@@ -154,17 +183,34 @@
     self.AlertContentView.frame=frame;
     self.AlertContentView.center = self.center;
 }
+-(void)UpdateAllLabelFrame{
+    self.TitleLabel.textAlignment = NSTextAlignmentCenter;
+    CGFloat TitleLabelX = 20;
+    CGFloat TitleLabelY = 20;
+    CGFloat TitleLabelW =self.AlertContentView.frame.size.width-TitleLabelX*2;
+    CGSize TitleLabelSize = [self.TitleLabel sizeThatFits:CGSizeMake(TitleLabelW, CGFLOAT_MAX)];
+    self.TitleLabel.frame =CGRectMake(TitleLabelX, TitleLabelY, TitleLabelW, TitleLabelSize.height);
+    self.MessageLabel.textAlignment = NSTextAlignmentLeft;
+    CGFloat MessageLabelX = 20;
+    CGFloat MessageLabelY = CGRectGetMaxY(self.TitleLabel.frame)+10;
+    CGFloat MessageLabelW =self.AlertContentView.frame.size.width-MessageLabelX*2;
+    CGSize MessageLabelSize = [self.MessageLabel sizeThatFits:CGSizeMake(MessageLabelW, CGFLOAT_MAX)];
+    self.MessageLabel.frame =CGRectMake(MessageLabelX, MessageLabelY, MessageLabelW, MessageLabelSize.height);
+    self.MaxHeight = CGRectGetMaxY(self.MessageLabel.frame);
+
+}
 #pragma mark😂有两个Action按钮时😂
 -(void)UpdateTwoButtonFrame{
     for (NSInteger i=0; i<self.ActionsArray.count; i++) {
-        UIButton *btn =self.ActionsArray[i];
-        btn.userInteractionEnabled=YES;
-        [btn addTarget:self action:@selector(btnclick:) forControlEvents:UIControlEventTouchUpInside];
-        btn.frame=CGRectMake(self.AlertContentView.bounds.size.width*0.5*i, self.MaxHeight+10, self.AlertContentView.bounds.size.width*0.5, 40);
+        JGZAlertAction *Action =self.ActionsArray[i];
+        Action.userInteractionEnabled=YES;
+        Action.tag = 10+i;
+        [Action addTarget:self action:@selector(btnclick:) forControlEvents:UIControlEventTouchUpInside];
+        Action.frame=CGRectMake(self.AlertContentView.bounds.size.width*0.5*i, self.MaxHeight+10, self.AlertContentView.bounds.size.width*0.5, 40);
         if (i==0) {
-            [self ClipViewToBouns:btn Corner:UIRectCornerBottomLeft];
+            [self ClipViewToBouns:Action Corner:UIRectCornerBottomLeft];
         }else if(i==1){
-            [self ClipViewToBouns:btn Corner:UIRectCornerBottomRight];
+            [self ClipViewToBouns:Action Corner:UIRectCornerBottomRight];
         }
         UIView *lineview = self.SeparatorLineArray[i];
         lineview.frame = CGRectMake(20, self.MaxHeight+10, (self.AlertContentView.frame.size.width-20*2)*i, 0.5);
@@ -174,12 +220,13 @@
 -(void)UpdateOneOrMoreButtonFrame{
     self.MaxHeight= self.MaxHeight+10;
     for (NSInteger i=0; i<self.ActionsArray.count; i++) {
-        UIButton *btn =self.ActionsArray[i];
-        btn.userInteractionEnabled=YES;
-        [btn addTarget:self action:@selector(btnclick:) forControlEvents:UIControlEventTouchUpInside];
-        btn.frame=CGRectMake(0, self.MaxHeight+40*i, self.AlertContentView.bounds.size.width, 40);
+        JGZAlertAction *Action =self.ActionsArray[i];
+        Action.userInteractionEnabled=YES;
+        Action.tag=10+i;
+        [Action addTarget:self action:@selector(btnclick:) forControlEvents:UIControlEventTouchUpInside];
+        Action.frame=CGRectMake(0, self.MaxHeight+40*i, self.AlertContentView.bounds.size.width, 40);
         if (i==self.ActionsArray.count-1) {
-            [self ClipViewToBouns:btn Corner:UIRectCornerBottomLeft|UIRectCornerBottomRight];
+            [self ClipViewToBouns:Action Corner:UIRectCornerBottomLeft|UIRectCornerBottomRight];
         }
         UIView *lineview = self.SeparatorLineArray[i];
         lineview.frame = CGRectMake(0, self.MaxHeight+40*i, self.AlertContentView.frame.size.width, 0.5);
@@ -192,81 +239,32 @@
     maskLayer.path = maskPath.CGPath;
     view.layer.mask = maskLayer;
 }
--(void)btnclick:(UIButton *)sender{
+-(void)btnclick:(JGZAlertAction *)sender{
     NSLog(@"------------");
+    //NSInteger tag= sender.tag;
+    if (sender.ActionBlock) {
+        sender.ActionBlock(sender);
+    }
 }
 
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     [self dismissAnimation];
 }
 
+#pragma mark😂注册屏幕旋转通知😂
+-(void)RegisterRotateNotification{
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(statusBarOrientationChange:)name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+}
 
-//-(void)noti{
-//    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(statusBarOrientationChange:)name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
-//}
-//
-//- (void)statusBarOrientationChange:(NSNotification *)notification{
-//    
-//    UIInterfaceOrientation orientation = [[UIApplication sharedApplication]statusBarOrientation];
-//    if (orientation ==UIInterfaceOrientationLandscapeRight)// home键靠右
-//    {
-//        //
-//    }
-//    if (orientation ==UIInterfaceOrientationLandscapeLeft)// home键靠左
-//    {
-//        
-//    }
-//    if (orientation ==UIInterfaceOrientationPortrait){
-//        
-//    }
-//    if (orientation ==UIInterfaceOrientationPortraitUpsideDown){
-//        
-//    }
-//    self.MaxHeight=100.0;
-//    [self UpdateAllButtonFrame];
-//}
-//
-////注意这种方式监听的是StatusBar也就是状态栏的方向，所以这个是跟你的布局有关的，你的布局转了，才会接到这个通知，而不是设备旋转的通知。当我们关注的东西和布局相关而不是纯粹设备旋转，我们使用上面的代码作为实现方案比较适合。
-//
-////2.注册UIDeviceOrientationDidChangeNotification通知
-//-(void)monitorDevice{
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
-//}
-//- (void)orientChange:(NSNotification *)noti
-//{
-//    
-//    NSDictionary* ntfDict = [noti userInfo];
-//    
-//    UIDeviceOrientation  orient = [UIDevice currentDevice].orientation;
-//    /*
-//     UIDeviceOrientationUnknown,
-//     UIDeviceOrientationPortrait,            // Device oriented vertically, home button on the bottom
-//     UIDeviceOrientationPortraitUpsideDown,  // Device oriented vertically, home button on the top
-//     UIDeviceOrientationLandscapeLeft,       // Device oriented horizontally, home button on the right
-//     UIDeviceOrientationLandscapeRight,      // Device oriented horizontally, home button on the left
-//     UIDeviceOrientationFaceUp,              // Device oriented flat, face up
-//     UIDeviceOrientationFaceDown             // Device oriented flat, face down   */
-//    
-//    switch (orient)
-//    {
-//        caseUIDeviceOrientationPortrait:
-//            
-//            break;
-//        caseUIDeviceOrientationLandscapeLeft:
-//            
-//            
-//            break;
-//        caseUIDeviceOrientationPortraitUpsideDown:
-//            
-//            
-//            break;
-//        caseUIDeviceOrientationLandscapeRight:
-//            
-//            
-//            break;
-//            
-//        default:
-//            break;
-//    }
-//}
+- (void)statusBarOrientationChange:(NSNotification *)notification{
+    self.bounds =[UIScreen mainScreen].bounds;
+    self.center = [UIApplication sharedApplication].keyWindow.center;
+    self.AlertContentView.bounds = CGRectMake(0, 0, JGZ_SCREEN_WIDTH*0.75, 250);
+    self.AlertContentView.center =self.center;
+    [self UpdateAllSubviewsFrame];
+}
+#pragma mark😂移除屏幕旋转通知😂
+-(void)RemoveRotateNotification{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+}
 @end
