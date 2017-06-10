@@ -8,13 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface JGZAlertAction:UIButton
-
-+(instancetype)ActionWithTitle:(NSString *)title ClickBlock:(void(^)(JGZAlertAction *Action))block;
-+(UIImage *)imageWithColor:(UIColor *)color;
-@end
-
 @interface JGZAlertView : UIView
+
 @property (nonatomic, copy) NSString *AlertTitle;
 @property (nonatomic, copy) NSString *AlertMessage;
 
@@ -23,6 +18,6 @@
 -(instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initPrivate;
 +(instancetype)AlertViewWithTitle:(NSString *)Title Message:(NSString *)message;
--(void)AddAction:(JGZAlertAction *)Action;
+-(void)AddAction:(UIButton *)Button;
 -(void)show;
 @end
