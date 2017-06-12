@@ -44,26 +44,27 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     JGZAlertView *AlertView = [JGZAlertView AlertViewWithTitle:@"这是标题埃及双方尽快核实到使肌肤及时发放" Message:@"1. 日夜赶工,修复了一堆bug.\n2. 跟着产品经理改来改去,增加了很多功能.\n3. 貌似性能提升了那么一点点.\n4. 日夜赶工,修复了一堆bug.\n5. 跟着产品经理改来改去,增加了很多功能.\n6. 貌似性能提升了那么一点点."];
+   // AlertView.MessageAlignment = NSTextAlignmentCenter;
     JGZAlertAction *btn1 = [JGZAlertAction ActionWithTitle:@"取消" ClickBlock:^(JGZAlertAction *Action) {
-        
+        NSLog(@"%@",Action.title);
     }];
     JGZAlertAction *btn2 = [JGZAlertAction ActionWithTitle:@"确定" ClickBlock:^(JGZAlertAction *Action) {
-        
+        NSLog(@"%@",Action.title);
     }];
     JGZAlertAction *btn3 = [JGZAlertAction ActionWithTitle:@"更新" ClickBlock:^(JGZAlertAction *Action) {
-        
+        NSLog(@"%@",Action.title);
     }];
     JGZAlertAction *btn4 = [JGZAlertAction ActionWithTitle:@"更新1" ClickBlock:^(JGZAlertAction *Action) {
-        
+        NSLog(@"%@",Action.title);
     }];
     JGZAlertAction *btn5 = [JGZAlertAction ActionWithTitle:@"更新2" ClickBlock:^(JGZAlertAction *Action) {
-        
+        NSLog(@"%@",Action.title);
     }];
     JGZAlertAction *btn6 = [JGZAlertAction ActionWithTitle:@"更新3" ClickBlock:^(JGZAlertAction *Action) {
-        
+        NSLog(@"%@",Action.title);
     }];
     JGZAlertAction *btn7 = [JGZAlertAction ActionWithTitle:@"更新4" ClickBlock:^(JGZAlertAction *Action) {
-        
+        NSLog(@"%@",Action.title);
     }];
    
     [AlertView AddAction:btn1];
@@ -73,6 +74,7 @@
     [AlertView AddAction:btn5];
     [AlertView AddAction:btn6];
     [AlertView AddAction:btn7];
+    
     [AlertView show];
  
 }

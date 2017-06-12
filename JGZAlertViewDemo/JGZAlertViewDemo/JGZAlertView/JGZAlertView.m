@@ -5,14 +5,7 @@
 //  Created by 江贵铸 on 2017/6/8.
 //  Copyright © 2017年 江贵铸. All rights reserved.
 //
-/*//////////////////本次完成//////////////////////////////////////
- *适配屏幕选装：把title和message控件设为全局控件，在layoutSubviews里面计算大小
- *自定义按钮控件，写个继承UIButton的子类，工厂方法快速创建
- *//////////////////////////////////////////////////////////////
 
-/*//////////////////下次开始//////////////////////////////////////
- *重构代码
- *//////////////////////////////////////////////////////////////
 #import "JGZAlertView.h"
 #define JGZ_SCREEN_WIDTH ([[UIScreen mainScreen] bounds].size.width)
 #define JGZ_SCREEN_HEIGHT ([[UIScreen mainScreen] bounds].size.height)
@@ -21,7 +14,6 @@
 #pragma mark==😂UIButton的子类😂==
 
 @interface JGZAlertAction()
-@property (nonatomic,copy)NSString *title;
 @property (nonatomic,copy) void(^ActionBlock)(JGZAlertAction *Action);
 @end
 @implementation JGZAlertAction
@@ -39,12 +31,12 @@
 #pragma mark-根据颜色生成图片
 /**根据颜色生成图片*/
 +(UIImage *)imageWithColor:(UIColor *)color {
-    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f); //宽高 1.0只要有值就够了
-    UIGraphicsBeginImageContext(rect.size); //在这个范围内开启一段上下文
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetFillColorWithColor(context, [color CGColor]);//在这段上下文中获取到颜色UIColor
-    CGContextFillRect(context, rect);//用这个颜色填充这个上下文
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();//从这段上下文中获取Image属性,,,结束
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return image;
 }
@@ -109,22 +101,27 @@
     return AlertView;
 }
 -(void)CreatSubViews{
-    UILabel *TitleLabel = [UILabel new];
-    self.TitleLabel = TitleLabel;
-    TitleLabel.text = self.AlertTitle;
-    TitleLabel.textColor =JGZ_ThemeColor;
-    TitleLabel.numberOfLines=0;
-    TitleLabel.font = [UIFont systemFontOfSize:20];
-    [self.AlertContentView addSubview:TitleLabel];
+    if (self.AlertTitle.length>0) {
+        UILabel *TitleLabel = [UILabel new];
+        self.TitleLabel = TitleLabel;
+        TitleLabel.text = self.AlertTitle;
+        TitleLabel.textAlignment = NSTextAlignmentCenter;
+        TitleLabel.textColor =JGZ_ThemeColor;
+        TitleLabel.numberOfLines=0;
+        TitleLabel.font = [UIFont systemFontOfSize:20];
+        [self.AlertContentView addSubview:TitleLabel];
+    }
     
-    UILabel *MessageLabel = [UILabel new];
-    self.MessageLabel = MessageLabel;
-    MessageLabel.text = self.AlertMessage;
-    MessageLabel.textColor =JGZ_ThemeColor;
-    MessageLabel.numberOfLines=0;
-    MessageLabel.font = [UIFont systemFontOfSize:15];
-    [self.AlertContentView addSubview:MessageLabel];
-
+    if (self.AlertMessage.length>0) {
+        UILabel *MessageLabel = [UILabel new];
+        self.MessageLabel = MessageLabel;
+        MessageLabel.text = self.AlertMessage;
+        MessageLabel.textAlignment = NSTextAlignmentLeft;
+        MessageLabel.textColor =JGZ_ThemeColor;
+        MessageLabel.numberOfLines=0;
+        MessageLabel.font = [UIFont systemFontOfSize:15];
+        [self.AlertContentView addSubview:MessageLabel];
+    }
 }
 
 -(UIView *)CreatSeparatorLine{
@@ -184,19 +181,25 @@
     self.AlertContentView.center = self.center;
 }
 -(void)UpdateAllLabelFrame{
-    self.TitleLabel.textAlignment = NSTextAlignmentCenter;
-    CGFloat TitleLabelX = 20;
-    CGFloat TitleLabelY = 20;
-    CGFloat TitleLabelW =self.AlertContentView.frame.size.width-TitleLabelX*2;
-    CGSize TitleLabelSize = [self.TitleLabel sizeThatFits:CGSizeMake(TitleLabelW, CGFLOAT_MAX)];
-    self.TitleLabel.frame =CGRectMake(TitleLabelX, TitleLabelY, TitleLabelW, TitleLabelSize.height);
-    self.MessageLabel.textAlignment = NSTextAlignmentLeft;
-    CGFloat MessageLabelX = 20;
-    CGFloat MessageLabelY = CGRectGetMaxY(self.TitleLabel.frame)+10;
-    CGFloat MessageLabelW =self.AlertContentView.frame.size.width-MessageLabelX*2;
-    CGSize MessageLabelSize = [self.MessageLabel sizeThatFits:CGSizeMake(MessageLabelW, CGFLOAT_MAX)];
-    self.MessageLabel.frame =CGRectMake(MessageLabelX, MessageLabelY, MessageLabelW, MessageLabelSize.height);
-    self.MaxHeight = CGRectGetMaxY(self.MessageLabel.frame);
+    CGFloat TopMargin = self.TitleLabel?20:10;
+    if (self.TitleLabel) {
+        
+        CGFloat TitleLabelX = 20;
+        CGFloat TitleLabelY = 0+TopMargin;
+        CGFloat TitleLabelW =self.AlertContentView.frame.size.width-TitleLabelX*2;
+        CGSize TitleLabelSize = [self.TitleLabel sizeThatFits:CGSizeMake(TitleLabelW, CGFLOAT_MAX)];
+        self.TitleLabel.frame =CGRectMake(TitleLabelX, TitleLabelY, TitleLabelW, TitleLabelSize.height);
+    }
+   
+    if (self.MessageLabel) {
+        
+        CGFloat MessageLabelX = 20;
+        CGFloat MessageLabelY = TopMargin+CGRectGetHeight(self.TitleLabel.frame)+10;
+        CGFloat MessageLabelW =self.AlertContentView.frame.size.width-MessageLabelX*2;
+        CGSize MessageLabelSize = [self.MessageLabel sizeThatFits:CGSizeMake(MessageLabelW, CGFLOAT_MAX)];
+        self.MessageLabel.frame =CGRectMake(MessageLabelX, MessageLabelY, MessageLabelW, MessageLabelSize.height);
+    }
+    self.MaxHeight = TopMargin+CGRectGetHeight(self.TitleLabel.frame)+10+CGRectGetHeight(self.MessageLabel.frame);
 
 }
 #pragma mark😂有两个Action按钮时😂
@@ -240,17 +243,17 @@
     view.layer.mask = maskLayer;
 }
 -(void)btnclick:(JGZAlertAction *)sender{
-    NSLog(@"------------");
-    //NSInteger tag= sender.tag;
+    //NSLog(@"%@",sender.title);
     if (sender.ActionBlock) {
         sender.ActionBlock(sender);
     }
-}
-
--(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     [self dismissAnimation];
 }
 
+-(void)setMessageAlignment:(NSTextAlignment)MessageAlignment{
+    _MessageAlignment = MessageAlignment;
+    self.MessageLabel.textAlignment = MessageAlignment;
+}
 #pragma mark😂注册屏幕旋转通知😂
 -(void)RegisterRotateNotification{
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(statusBarOrientationChange:)name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];

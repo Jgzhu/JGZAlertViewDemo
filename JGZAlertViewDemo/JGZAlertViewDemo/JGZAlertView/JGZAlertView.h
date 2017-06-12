@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface JGZAlertAction:UIButton
-
+@property (nonatomic,copy)NSString *title;
 +(instancetype)ActionWithTitle:(NSString *)title ClickBlock:(void(^)(JGZAlertAction *Action))block;
 +(UIImage *)imageWithColor:(UIColor *)color;
 @end
@@ -17,6 +17,8 @@
 @interface JGZAlertView : UIView
 @property (nonatomic, copy) NSString *AlertTitle;
 @property (nonatomic, copy) NSString *AlertMessage;
+
+@property (nonatomic, assign) NSTextAlignment MessageAlignment;
 
 -(instancetype)init NS_UNAVAILABLE;
 -(instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
