@@ -43,6 +43,12 @@
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    NSString *str = @"";
+    if (indexPath.section==0) {
+        str=@"";
+    }else{
+        str=@"这是标题埃及双方尽快核实到使肌肤及时发放";
+    }
     JGZAlertView *AlertView = [JGZAlertView AlertViewWithTitle:@"这是标题埃及双方尽快核实到使肌肤及时发放" Message:@"1. 日夜赶工,修复了一堆bug.\n2. 跟着产品经理改来改去,增加了很多功能.\n3. 貌似性能提升了那么一点点.\n4. 日夜赶工,修复了一堆bug.\n5. 跟着产品经理改来改去,增加了很多功能.\n6. 貌似性能提升了那么一点点."];
    // AlertView.MessageAlignment = NSTextAlignmentCenter;
     JGZAlertAction *btn1 = [JGZAlertAction ActionWithTitle:@"取消" ClickBlock:^(JGZAlertAction *Action) {
@@ -66,14 +72,53 @@
     JGZAlertAction *btn7 = [JGZAlertAction ActionWithTitle:@"更新4" ClickBlock:^(JGZAlertAction *Action) {
         NSLog(@"%@",Action.title);
     }];
-   
-    [AlertView AddAction:btn1];
-    [AlertView AddAction:btn2];
-    [AlertView AddAction:btn3];
-    [AlertView AddAction:btn4];
-    [AlertView AddAction:btn5];
-    [AlertView AddAction:btn6];
-    [AlertView AddAction:btn7];
+    switch (indexPath.section) {
+        case 0:
+            [AlertView AddAction:btn1];
+            break;
+        case 1:
+            [AlertView AddAction:btn1];
+            [AlertView AddAction:btn2];
+            break;
+        case 2:
+            [AlertView AddAction:btn1];
+            [AlertView AddAction:btn2];
+            [AlertView AddAction:btn3];
+            break;
+        case 3:
+            [AlertView AddAction:btn1];
+            [AlertView AddAction:btn2];
+            [AlertView AddAction:btn3];
+            [AlertView AddAction:btn4];
+            break;
+        case 4:
+            [AlertView AddAction:btn1];
+            [AlertView AddAction:btn2];
+            [AlertView AddAction:btn3];
+            [AlertView AddAction:btn4];
+            [AlertView AddAction:btn5];
+            break;
+        case 5:
+            [AlertView AddAction:btn1];
+            [AlertView AddAction:btn2];
+            [AlertView AddAction:btn3];
+            [AlertView AddAction:btn4];
+            [AlertView AddAction:btn5];
+            [AlertView AddAction:btn6];
+            break;
+        case 6:
+            [AlertView AddAction:btn1];
+            [AlertView AddAction:btn2];
+            [AlertView AddAction:btn3];
+            [AlertView AddAction:btn4];
+            [AlertView AddAction:btn5];
+            [AlertView AddAction:btn6];
+            [AlertView AddAction:btn7];
+            break;
+        default:
+            break;
+    }
+    
     
     [AlertView show];
  
